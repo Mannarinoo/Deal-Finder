@@ -7,7 +7,6 @@ public class DealsPopUp extends JFrame {
 	JPanel popUpPanel = new JPanel();
 
 	public DealsPopUp(){
-		super("Deal Sailor");
 		setMinimumSize(new Dimension(600, 375));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		popUpPanel.setLayout(new BoxLayout(popUpPanel, BoxLayout.Y_AXIS));
