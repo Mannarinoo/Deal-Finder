@@ -15,18 +15,17 @@ public class DealsPopUp extends JFrame {
 		setVisible(true);
 	}
 
-	public void displayItems(ArrayList<ArrayList<String>> items){
-		if (items.size() == 0) {
+	public void displayItems(ArrayList<String> parsedData){
+		if (parsedData.size() == 0) {
 			System.out.println("No results found");
 			this.popUpPanel.add(new JLabel("No results found"));
 		} else {
 			this.popUpPanel.removeAll();
 			JLabel header = new JLabel("Deals found on www.dealsea.com: ");
 			this.popUpPanel.add(header);
-			System.out.println("Displaying " + items.size() + " results");
+			System.out.println("Found " + parsedData.size() + " results");
 			int count = 0;
-			for (ArrayList<String> list : items) {
-				for (String item: list) {
+			for (String item : parsedData) {
 				count++;
 				JLabel currItem = new JLabel(count + ".  " + item);
 				JLabel space = new JLabel(" ");
@@ -34,7 +33,6 @@ public class DealsPopUp extends JFrame {
 				currItem.setFont(new Font("Verdana", Font.PLAIN, 18));
 				this.popUpPanel.add(currItem);
 				
-				}
 			}
 		}
 		pack();
