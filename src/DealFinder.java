@@ -6,15 +6,15 @@ import org.jsoup.select.Elements;
 import org.jsoup.*;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 public class DealFinder {
 
 	private static final String URL = "https://dealsea.com/";
-	private static final String RESULT_SELECTOR = "div.dealcontent > strong > a";
-	private static DealsPopUp popUp;
+	private static final String Deals_Content = "div.dealcontent > strong > a";
+	private static DealsPanel popUp;
 	static ArrayList<String> resultText = new ArrayList<String>();
 	
 	public static void main(String[] args) throws InterruptedException {
@@ -34,7 +34,7 @@ public class DealFinder {
 			}
 			// Display Pop-up with search results
 			if (popUp == null || !popUp.isDisplayable()) {
-				popUp = new DealsPopUp();
+				popUp = new DealsPanel();
 			}
 			popUp.displayItems(resultText);
 			search_results.removeAll(search_results);
@@ -43,39 +43,28 @@ public class DealFinder {
 		}
 	}
 	public static ArrayList<String> WebAddressParser(String keyword) {
-		// Get elements from url matching selector
-		Document document = parseUrl(URL);
-		ArrayList<Element> results = getItems(document, RESULT_SELECTOR);
-
-		// Get text from elements matching keyword
+		// Get elements from url matching selector (deals content)
+		Document document = new Document(keyword);
+		try {
+			document = Jsoup.connect(URL).get();
+		} catch (Exception e){
+			System.err.println(e.getLocalizedMessage());
+		}
+		ArrayList<Element> results = new ArrayList<Element>();
+		if (document == null) {
+			results = new Elements();
+		}else {
+			results = document.select(Deals_Content);
+		}
+		// Search for elements that contain DealsContent and keywords. The search is case insensitive
 		for (Element element : results) {
 			String elementText = element.text();
-			if (matchedSearch(keyword, elementText) && !resultText.contains(elementText)) {
+			keyword = keyword.toLowerCase();
+			elementText = elementText.toLowerCase();
+			if (elementText.contains(keyword) && !resultText.contains(elementText)) {
 				resultText.add(elementText);
 			}
 		}
 		return resultText;
-	}
-
-	private static Document parseUrl(String s) {
-		try {
-			return Jsoup.connect(s).get();
-		} catch (Exception e){
-			System.err.println(e.getLocalizedMessage());
-			return null;
-		}
-	}
-
-	private static Elements getItems(Document document, String selector) {
-		if (document == null)
-			return new Elements();
-		else
-			return document.select(selector);
-	}
-
-	private static boolean matchedSearch(String searchQuery, String searchResult) {
-		String query = searchQuery.toLowerCase();
-		String result = searchResult.toLowerCase();
-		return result.contains(query);
 	}
 }

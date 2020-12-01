@@ -1,25 +1,25 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 
-public class DealsPopUp extends JFrame {
+public class DealsPanel extends JFrame {
 	JPanel popUpPanel = new JPanel();
 
-	public DealsPopUp(){
-		setMinimumSize(new Dimension(600, 375));
+	public DealsPanel(){
+		setMinimumSize(new Dimension(600, 475));
+		popUpPanel.setBackground(Color.RED);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		popUpPanel.setLayout(new BoxLayout(popUpPanel, BoxLayout.Y_AXIS));
-		popUpPanel.setBackground(Color.RED);
 		add(popUpPanel);
 		setVisible(true);
 	}
 
 	public void displayItems(ArrayList<String> parsedData){
 		if (parsedData.size() == 0) {
-			System.out.println("No results found");
-			this.popUpPanel.add(new JLabel("No results found"));
-		} else {
+			System.out.println("No results were found");
+			this.popUpPanel.add(new JLabel("No results were found"));
+		}
+		else {
 			this.popUpPanel.removeAll();
 			JLabel header = new JLabel("Deals found on www.dealsea.com: ");
 			this.popUpPanel.add(header);
