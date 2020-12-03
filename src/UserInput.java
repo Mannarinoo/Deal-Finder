@@ -5,9 +5,9 @@ public class UserInput {
     private int frequency;
     private String[] keyWord;
     private Scanner scanner = new Scanner(System.in);
-
+  
     public UserInput(){
-
+    	//ask user for keywords and frequency of search
         System.out.println("Enter item(s) you want to search for! (space delimited)");
         keyWord = scanner.nextLine().split(" ");
         System.out.println("How often would you like to check for deals? (min)");
@@ -21,12 +21,12 @@ public class UserInput {
         System.out.println("Frequency of Search: " + frequency +" min");
         scanner.close();
     }
-
-    public int getInterval() {
+    //helper methods
+    public int getFrequency() {
         return this.frequency;
     }
 
-    public String[] getKeyWord() {
+    public String[] getKeyWords() {
         return this.keyWord;
     }
 

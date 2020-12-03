@@ -3,68 +3,69 @@ import java.util.ArrayList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.jsoup.*;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-
-import java.util.ArrayList;
-import java.util.LinkedList;
 public class DealFinder {
 
-	private static final String URL = "https://dealsea.com/";
-	private static final String Deals_Content = "div.dealcontent > strong > a";
-	private static DealsPanel popUp;
-	static ArrayList<String> resultText = new ArrayList<String>();
+	private static String URL = "https://dealsea.com/";
+	private static String select_all = "div.dealcontent";
+	private static String select_title = "div.dealcontent > strong > a";//select elements where div class = "dealcontent" and look for the <a> tag that includes the title of the deal
+	private static DealsPanel deals_popUp;
+	static ArrayList<String> deals_arr = new ArrayList<String>();
 	
 	public static void main(String[] args) throws InterruptedException {
-		// Read console input
+		// Get User input
 		UserInput search = new UserInput();
-		String[] keyWord = search.getKeyWord();
-		ArrayList<ArrayList<String>> search_results = new ArrayList<ArrayList<String>>();
-		ArrayList<String> parsedData = new ArrayList<String>();
-		int intervalMinutes = search.getInterval();
-		long intervalMillis = intervalMinutes * 60 * 1000;
+		
+		String[] key_words = search.getKeyWords();
+		int frequency = search.getFrequency();
+		long frequency_millis = frequency * 60 * 1000;
 		
 		while (true) {
 			long startTime = System.currentTimeMillis();
-			// Get search results
-			for (int i = 0; i < keyWord.length; i ++) {
-			WebAddressParser(keyWord[i]);
+			// Parse Web Address using keyword
+			for (int i = 0; i < key_words.length; i ++) {
+				DealFinder(key_words[i]);
 			}
 			// Display Pop-up with search results
-			if (popUp == null || !popUp.isDisplayable()) {
-				popUp = new DealsPanel();
+			if (deals_popUp == null || !deals_popUp.isDisplayable()) {
+				deals_popUp = new DealsPanel();
 			}
-			popUp.displayItems(resultText);
-			search_results.removeAll(search_results);
+			deals_popUp.displayDeals(deals_arr);
+			//Stop the thread based on frequency input 
 			long timeElapsed = System.currentTimeMillis() - startTime;
-			Thread.sleep(intervalMillis - timeElapsed);
+			Thread.sleep(frequency_millis - timeElapsed);
 		}
 	}
-	public static ArrayList<String> WebAddressParser(String keyword) {
-		// Get elements from url matching selector (deals content)
-		Document document = new Document(keyword);
+	public static void DealFinder(String keywords) {
+		Document document = new Document(keywords);
+		//download html home page of dealsea.com
 		try {
 			document = Jsoup.connect(URL).get();
 		} catch (Exception e){
-			System.err.println(e.getLocalizedMessage());
+			System.err.println(e);
 		}
-		ArrayList<Element> results = new ArrayList<Element>();
+		Elements results_exp = new Elements();
+		Elements results = new Elements();
 		if (document == null) {
+			results_exp = new Elements();
 			results = new Elements();
 		}else {
-			results = document.select(Deals_Content);
+			// Parse elements from url (dealsea home page) matching selector  (div class = deals content / strong tag / a tag)
+			// The selector decides which elements of the html to parse on 
+			results_exp = document.select(select_all);
+			results = document.select(select_title);
 		}
-		// Search for elements that contain DealsContent and keywords. The search is case insensitive
-		for (Element element : results) {
-			String elementText = element.text();
-			keyword = keyword.toLowerCase();
-			elementText = elementText.toLowerCase();
-			if (elementText.contains(keyword) && !resultText.contains(elementText)) {
-				resultText.add(elementText);
-			}
+		// Finding elements where the title contains the keywords and does not contain the expired tag
+		for(int k = 0; k < results.size(); k++) {
+			if(!results_exp.get(k).hasClass("colr_red xxsmall")) {
+				String element = results.get(k).text();
+				keywords = keywords.toLowerCase();
+				element = element.toLowerCase();
+				if (element.contains(keywords) && !deals_arr.contains(element)) {
+					deals_arr.add(element);
+				}
+		  }
 		}
-		return resultText;
 	}
 }
